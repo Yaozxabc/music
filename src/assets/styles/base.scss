@@ -1,0 +1,60 @@
+$bgColor:#000088;
+$borColor:#fff;
+
+$border:1px solid #000;
+
+$fontSize:16px;
+$fontColor:#fff;
+$colorLink:#FFEC1D;
+
+
+
+
+@mixin sj($fx:top,$size:10px,$color:red){
+  @if($fx==top){
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 $size $size $size;
+    border-color: transparent transparent $color transparent;
+  }@else if($fx==right){
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width:  $size 0 $size $size;
+    border-color: transparent transparent transparent $color;
+  }@else if($fx==bottom){
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width:  $size  $size 0 $size;
+    border-color:$color  transparent transparent transparent ;
+  }@else if($fx==left){
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width:  $size  $size  $size 0;
+    border-color: transparent $color transparent transparent ;
+  }
+}
+
+.icon{
+  &_sjT{
+    @include sj($fx:right,$size:20px,$color:yellow)
+  }
+  &_sjR{
+    @include sj($fx:right,$size:20px,$color:yellow)
+  }
+  &_sjB{
+    @include sj($fx:right,$size:20px,$color:yellow)
+  }
+  &_sjL{
+    @include sj($fx:right,$size:20px,$color:yellow)
+  }
+  &_search {
+  background: #0000fe;
+    color: #ffffff;
+}
+}
+
+
