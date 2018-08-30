@@ -2,7 +2,7 @@
  * Created by Administrator on 2018/8/26.
  */
 export function addClass(el,className){
-  console.log('aaaddd')
+
   if(hasClass(el,className)){
     return
   }else{

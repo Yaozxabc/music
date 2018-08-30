@@ -12,11 +12,23 @@ function param(data){//data为传入的对象
   return url?url.substring(1):""//返回url，并对url的首字符‘&’进行切除
 }
 const data=Object.assign({},commonParams)
+const playdata=Object.assign({},commonParams,{
+  picmid:1,
+  rnd:0.3062479912884237,
+  format:'jsonp',
+  notice:0,
+  platform:'yqq',
+  needNewCode:0,
+  categoryId:10000000,
+  sortId:5,
+  sin:0,
+  ein:29,
+})
 
 export default{
   // 产品相关操作
-  productList:'/api'+'/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?'+param(data), // 产品列表
-  productDetails:'/api/product/productDetails', // 产品详情
+  sliderList:'/api'+'/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?'+param(data), // 产品列表
+  playlists:'/music'+"weapi/v3/playlist/detail", // 产品详情
   productCount:'/api/product/productCount', // 产品种数
   // 社区相关操作
   articleList:'/api/article/articleList', // 文章列表

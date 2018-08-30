@@ -9,7 +9,7 @@ import axios from 'axios'
 import Mock from 'mockjs'
 import api from 'res/api/api.js'
 
-
+import loading from 'com/base/loading'
 
 import _ from 'lodash'
 import Vlazyload from 'vue-lazyload'
@@ -18,13 +18,16 @@ import 'babel-polyfill'
 import fastclick from 'fastclick'
 fastclick.attach(document.body)
 
+
 Vue.prototype.$http=axios;
 Vue.prototype.$api=api;
-//Vue.use(Vlazyload,{
-//  loading:require('*.gif')
-//})
+Vue.prototype.$abc=Mock;
+Vue.use(Vlazyload,{
+  loading:require('com/m-header/logo.png')
+})
 Vue.config.productionTip = false
 
+Vue.use(loading)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

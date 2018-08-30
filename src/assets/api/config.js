@@ -18,4 +18,4 @@ export  const options={
   param:" ",//返回的回调函数名字。不设置的话，默认为callblack,
   prefix:null
 }
-export const err_ok=0 //返回后台获取数据状态
+export  const ERR_ok='0' //返回后台获取数据状态

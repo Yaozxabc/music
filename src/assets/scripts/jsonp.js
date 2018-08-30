@@ -6,7 +6,6 @@ export default function Jsonp(url,data,option){
   //url为请求地址
   //data为后端传递回来的参数对象
   //option为选项
-
   url +=(url.indexOf('?')<0?'?':'&')+param(data)
   return new Promise((resolve,reject)=>{
     originJsonp(url,option,(error,data)=>{

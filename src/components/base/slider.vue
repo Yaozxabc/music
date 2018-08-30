@@ -38,7 +38,7 @@
       _setSliderWidth(isResize){
         this.children=this.$refs.sliderGroup.children
         let width=0;
-        let sliderWidth=this.$refs.slider.clientWidth
+        let sliderWidth=this.$refs.slider.clientWidth;
         for(let i=0;i<this.children.length;i++){
           let child=this.children[i];
           addClass(child,'slider_item')
@@ -67,28 +67,30 @@
 //          if (this.loop) {
 //            // 由于bscroll循环播放首尾各加一个,因此索引-1
 //            pageIndex -= 1
-//          }
+//          }//旧版本
           this.nowindex=pageIndex;
           if(this.autoPlay){
             this._play()
           }
         })
-        this.slider.on('beforeScrollStart',()=>{
-          if(this.autoPlay){
-            clearTimeout(this.timer)
-          }
-        })
+//        this.slider.on('beforeScrollStart',()=>{
+//          if(this.autoPlay){
+//            clearTimeout(this.timer)
+//            this._play()
+//          }
+//        })
       },
       _initDots(){
         this.dots=new Array(this.children.length)
       },
       _play(){
-        let pageIndex=this.nowindex+1;
+//        let pageIndex=this.nowindex+1;
 //        if(this.loop){
 //          pageIndex+=1;
-//        }
+//        }//旧版本
         this.timer=setTimeout(()=>{
-          this.slider.goToPage(pageIndex,0,400)
+          this.slider.next()//新版本
+//          this.slider.goToPage(pageIndex,0,400)//旧版本
         },this.interval)
       }
     },
@@ -118,42 +120,42 @@ mounted(){
 
 <style scoped  lang="scss">
   .slider_warp{
-  width:100%;
-  position:relative;
-  .slider_group{
+    width:100%;
+    position:relative;
+    .slider_group{
     position: relative;
     overflow:hidden;
     white-space:nowrap;
   }
-  .slider_item{
+    .slider_item{
     float: left;
-  a{
-    width: 100%;
-  img{
-    width: 100%;
-  }
-  }
-  }
-  .dot_group{
+    box-sizing: border-box;
+    overflow: hidden;
+    text-align: center;
+    /*height: 250px;*/
+    overflow: hidden;
+                a{
+    display: block;  width: 100%;  overflow: hidden;  text-decoration: none;
+                img{
+    display: block;  width: 100%;
+  }}}
+    .dot_group{
     z-index: 2;
     position: absolute;
     bottom: 15px;
     left: 45%;
-  .dota{
+    .dota{
     width: 20px;
     height: 20px;
     display: inline-block;
     border-radius: 50%;
     margin-right: 8px;
     background: #f0c454;
-  }
-  .active{
+  }.active{
     width: 25px;
     height: 25px;
     background: #fff;
-  }
-  }
-  }
+  }}}
 
 
 </style>
