@@ -24,12 +24,21 @@ const playdata=Object.assign({},commonParams,{
   sin:0,
   ein:29,
 })
-
+const singerData=Object.assign({},commonParams,{
+  g_tk:5381,
+  loginUin:0,
+  hostUin:0,
+  inCharset:'utf8',
+  outCharset:'utf-8',
+  notice:0,
+  platform:'yqq',
+  needNewCode:0
+})
 export default{
   // 产品相关操作
   sliderList:'/api'+'/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?'+param(data), // 产品列表
   playlists:'/music'+"weapi/v3/playlist/detail", // 产品详情
-  productCount:'/api/product/productCount', // 产品种数
+  singerList:'/singer'+'/cgi-bin/musicu.fcg?'+param(singerData), // 歌手列表
   // 社区相关操作
   articleList:'/api/article/articleList', // 文章列表
   articleListDetails:'/api/article/productDetails', // 文章详情

@@ -42,6 +42,7 @@
   import scroll from 'base/scroll'
   import {getPlayList,getDiscList} from 'res/api/recommend.js'
   import {ERR_ok} from 'res/api/config.js'
+  import abc from 'res/api/api.js'
     export default{
         data(){
             return {
@@ -71,7 +72,7 @@
       })
     },
     _getSliderData(){
-      this.$http.get(this.$api.index.sliderList).then((res)=> {
+      this.$http.get(abc.index.sliderList).then((res)=> {
         var oData = res.data
         if (oData.code == ERR_ok) {
           this.recommend=oData.data.slider
@@ -114,7 +115,7 @@
     setPageHeight(){
       let oHeight=document.documentElement.clientHeight;
       let recom=document.getElementById('recommend_content');
-      recom.style.height=oHeight-100+'px';
+      recom.style.height=oHeight-80+'px';
     }
   },
   created(){
@@ -123,6 +124,9 @@
   },
   mounted(){
 this.setPageHeight();
+    window.addEventListener('resize',()=>{
+      this.setPageHeight();
+    })
   }
     }
 </script>
@@ -130,8 +134,11 @@ this.setPageHeight();
 
 <style scoped lang="scss">
   .recommend_content{
-    position: relative;
     overflow: hidden;
+    position: fixed;
+    top: 140px;
+    bottom: 0;
+    width:100%;
   }
   .recommend_list{
   text-align:center;

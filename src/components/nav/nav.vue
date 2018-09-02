@@ -2,8 +2,8 @@
 <div class="nav">
   <ul>
     <li><router-link tag="a" :to="{path:'/recommend'}">推荐</router-link></li>
-    <li><router-link tag="a" :to="{path:'/rank'}">歌手</router-link></li>
-    <li><router-link tag="a" :to="{path:'/singer'}">排行</router-link></li>
+    <li><router-link tag="a" :to="{path:'/singer'}">歌手</router-link></li>
+    <li><router-link tag="a" :to="{path:'/rank'}">排行</router-link></li>
     <li><router-link tag="a" :to="{path:'/search'}">搜索</router-link></li>
   </ul>
 </div>
@@ -20,6 +20,8 @@
 
 <style scoped lang="scss">
   .nav{
+    overflow: hidden;
+    padding: 20px 0;
   }
 .nav ul{
   display: flex;

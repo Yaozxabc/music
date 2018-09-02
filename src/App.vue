@@ -21,6 +21,10 @@ export default {
 
 <style lang="scss">
 #app {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
   background: $bgColor;
 }
 </style>

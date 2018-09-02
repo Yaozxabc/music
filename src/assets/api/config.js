@@ -15,7 +15,7 @@ export  const commonParams={
 }//通用配置参数属性值
 
 export  const options={
-  param:" ",//返回的回调函数名字。不设置的话，默认为callblack,
-  prefix:null
+  param:"",//返回的回调函数名字。不设置的话，默认为callblack,
+  prefix:""
 }
 export  const ERR_ok='0' //返回后台获取数据状态
