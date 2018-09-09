@@ -18,7 +18,7 @@ export default function Jsonp(url,data,option){
   })
 }
 
-function param(data){//data为传入的对象
+export function param(data){//data为传入的对象
   let url='';
   for(var k in data ){//k为data对象的属性名
     let value=data[k]!==undefined?data[k]:'';//循环遍历data对象的属性，如果定义的对象值为未定义，则设为空
