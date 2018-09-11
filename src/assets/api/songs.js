@@ -11,6 +11,7 @@ export default class song{
     this.name=name;
     this.album=album;
     this.duration=duration;
+    this.singer=singer;
     this.image=image;
   }
 }

@@ -1,7 +1,6 @@
 <template>
   <transition name="slider">
-<div class="singer_detail">
-  <button @click="_getSongs">获取歌曲列表</button>
+<music-list :songs="songs" :title="title" :bgImage="bgImage"></music-list>
 </div>
   </transition>
 </template>
@@ -10,6 +9,7 @@
   import {mapGetters} from 'vuex'
   import {getSingerDetail} from 'res/api/singerDetail'
   import {createSong,getVkey} from 'res/api/songs'
+  import MusicList from 'com/music-list/music-list'
     export default{
         data(){
             return {
@@ -17,9 +17,18 @@
             }
         },
   computed:{
+    title(){
+      return this.singer.name;
+    },
+    bgImage(){
+      return this.singer.avatar
+    },
   ...mapGetters([
       'singer'
     ])
+  },
+  components:{
+    MusicList
   },
   methods:{
     _getSongs(){
@@ -50,23 +59,13 @@
   },
   created(){
     this._getSongs();
-
   }
     }
 </script>
 
 
 <style scoped lang="scss">
-.singer_detail{
-  z-index: 100;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  color: #f0f7ff;
-  background-color:$bgColor;
-}
+
   .slider-enter-active,.slider-leave-active{
     transition: all .3s;
   }
