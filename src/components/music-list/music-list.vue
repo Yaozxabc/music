@@ -5,7 +5,7 @@
   </div>
   <h1 class="title" v-html="title" ></h1>
   <div class="bg-image" :style="bgStyle" ref="bgImage">
-    <div class="filter" ></div>
+    <div class="filter"  ref="filter" ></div>
   </div>
   <div class="bg-layer" ref="layer"></div>
   <scroll
@@ -59,8 +59,31 @@
   watch:{
     ScrollY(newY){
       let translateY=Math.max(this.minHeight,newY)
+      let zIndex=0;
+      let sCale=1;
+      let blur=0;
+      const precent=Math.abs(newY/this.imgHeight);
+      if(newY>0){
+        sCale=1+precent;
+        zIndex=102;
+      }else if(newY <0){
+        blur=Math.min(20*precent,20)
+      }
+      this.$refs.filter.style['backdrop-filter']=`blur(${blur})`
+      this.$refs.filter.style['webkitbackdrop-filter']=`blur(${blur})`
       this.$refs.layer.style[`transform`]=`translate3d(0,${translateY}px,0)`
       this.$refs.layer.style[`webkittransform`]=`translate3d(0,${translateY}px,0)`
+      if(newY<this.minHeight){
+        zIndex=200;
+        this.$refs.bgImage.style.paddingTop=0;
+        this.$refs.bgImage.style.height=`${RESERVET_HEIGHT}px`
+      }else{
+        this.$refs.bgImage.style.paddingTop=`70%`;
+        this.$refs.bgImage.style.height=`0`
+      }
+      this.$refs.bgImage.style.zIndex=zIndex;
+      this.$refs.bgImage.style[`transform`]=`scale(${sCale})`
+      this.$refs.bgImage.style[`webkittransform`]=`scale(${sCale})`
     }
   },
   components:{
@@ -97,12 +120,12 @@
   right: 0;
   background: $bgColor;
   .back{
-  position:absolute;
+  position:fixed;
     left: 0;
     top: 0;
     width:60px;
   height:60px;
-  z-index:2;
+  z-index:202;
     .icon-fenxiang{
       width: 100%;
       height: 100%;
@@ -111,7 +134,8 @@
     }
   }
   .title{
-    position: absolute;
+    z-index: 201;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
@@ -123,6 +147,7 @@
     background-color: rgba(0, 0, 0, 0.2);
   }
   .bg-image{
+    position: relative;
   width:100%;
   height:0;
   padding-top:70%;/*等于宽度的70%；padding-top和padding-bottom有个隐藏属性，当值为百分比的时候，其分母取的是父级容器宽度而非高度*/
@@ -133,11 +158,13 @@
     }
   }
 .bg-layer{
+  z-index: 101;
   position: relative;
   height: 100%;
   background: $bgColor;
 }
 .list{
+  z-index: 102;
   width: 100%;
   position: absolute;
   bottom:0;
