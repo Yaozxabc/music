@@ -16,7 +16,7 @@
     :data="songs"
     ref="list">
     <div class="song-list">
-      <song-list :songs="songs"></song-list>
+      <song-list :songs="songs" @select="selectSong"></song-list>
     </div>
   </scroll>
 </div>
@@ -25,6 +25,7 @@
 <script type="text/ecmascript-6">
   import Scroll from 'com/base/scroll'
   import SongList from 'com/base/songlist/songlist'
+  import {mapActions} from 'vuex'
   const RESERVET_HEIGHT=35;
     export default{
       props:{
@@ -103,7 +104,17 @@
     },
     scroll(pos){
       this.ScrollY=pos.y;
-    }
+    },
+    selectSong(item,index) {
+      console.log(item,index)
+      this.selectPlay({
+        list:this.songs,
+        index
+      })
+    },
+    ...mapActions([
+    'selectPlay'
+  ])
   }
 
     }
@@ -129,8 +140,8 @@
     .icon-fenxiang{
       width: 100%;
       height: 100%;
-      font-size: 50px;
-      color: #8b8a8a;
+      font-size: $iconSize;
+      color: $iconColor;
     }
   }
   .title{
