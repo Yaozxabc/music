@@ -2,6 +2,7 @@
  * Created by Administrator on 2018/9/7.
  */
 export const singer=state=>state.singer
+//等同于function（state）{return state.singer}
 
 export const playing=state=>state.playing
 

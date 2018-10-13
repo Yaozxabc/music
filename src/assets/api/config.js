@@ -10,8 +10,6 @@ export  const commonParams={
   notice:0,
   platform:'h5',
   needNewCode:1,
-  _:1535186832583
-
 }//通用配置参数属性值
 
 export  const options={

@@ -18,7 +18,6 @@ export  function getPlayList(){
     format:'jsonp',
     picmid:1,
     rnd:0.3062479912884237,
-    format:'jsonp',
     platform:'yqq',
     needNewCode:0,
     categoryId:10000000,

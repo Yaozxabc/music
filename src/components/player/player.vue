@@ -19,7 +19,7 @@
     </div>
     <div class="middle">
       <div class="middle-l">
-        <div class="cd-warpper" ref="cdWarpper">
+        <div :class="['cd-warpper',cdPlay]" ref="cdWarpper">
           <div class="cd">
             <img :src="curSong.image" alt="" class="image"/>
           </div>
@@ -27,18 +27,25 @@
       </div>
     </div>
     <div class="bottom">
+      <div class="progress-warpper">
+        <span class="time time-l">{{format(curTime)}}</span>
+        <div class="progress-bar-warpper">
+          <progress-bar :precent="precent"></progress-bar>
+        </div>
+        <span class="time time-r">{{format(curSong.duration)}}</span>
+      </div>
       <div class="opeators">
         <div class="icon i-left">
           <i class="iconfont icon-random"></i>
         </div>
         <div class="icon i-left">
-          <i class="iconfont icon-281-previous"></i>
+          <i class="iconfont icon-281-previous" @click="prev"></i>
         </div>
         <div class="icon i-center">
-          <i class="iconfont icon-play"></i>
+          <i @click="toogelPlaying" :class="['iconfont',playIcon]"></i>
         </div>
         <div class="icon i-right">
-          <i class="iconfont icon-next"></i>
+          <i class="iconfont icon-next" @click="next"></i>
         </div>
         <div class="icon i-right">
           <i class="iconfont icon-collection"></i>
@@ -49,7 +56,7 @@
   </transition>
   <transition name="mini">
   <div class="mini-player" v-show="!fullScreen" @click="open">
-    <div class="icon">
+    <div :class="['icon',cdPlay]">
       <img :src="curSong.image" alt=""/>
     </div>
     <div class="text">
@@ -57,12 +64,16 @@
       <p class="desc" v-html="curSong.singer"></p>
     </div>
     <div class="control">
-    </div>
-    <div class="control">
+      <div :class="['iconplay','iconfont',playIcon]" @click.stop="toogelPlaying">
+      </div>
       <i class="iconfont icon-random"></i>
     </div>
   </div>
   </transition>
+  <audio :src="curSong.url" ref="audio"
+         @canplay="ready"
+         @timeupdate="updateTime"
+    ></audio>
 </div>
 </template>
 
@@ -70,29 +81,44 @@
   import {mapGetters} from 'vuex'
   import {mapMutations} from 'vuex'
   import{prefixStyle} from 'res/scripts/dom.js'
+  import ProgressBar from 'com/base/progress-bar/progress-bar'
   import animations from 'create-keyframe-animation'
 
   const transform=prefixStyle('transform')
     export default{
         data(){
-            return {}
+            return {
+              songReady:false,
+              curTime:0
+            }
         },
   computed:{
-    ...mapGetters([
-      'fullScreen','playlist','curSong'
-    ])
+  ...mapGetters([
+      'fullScreen','playlist','curSong','playing','curIndex'
+    ]),
+    playIcon(){
+      return this.playing?'icon-pausecircle':'icon-play'
+    },
+    cdPlay(){
+      return this.playing?'play':'play pause'
+    },
+    precent(){
+      return this.curTime/this.curSong.duration
+    }
   },
   methods:{
+  ...mapMutations({
+      setFullScreen:'SET_FULL_SCREEN',
+      setPlaying:'SET_PLAYING_STATE',
+      setCurIndex:'SET_CURINDEX'
+    }),
     back(){
       this.setFullScreen(false)
     },
     open(){
       this.setFullScreen(true)
     },
-    ...mapMutations({
-      setFullScreen:'SET_FULL_SCREEN'
-    }),
-      enter(el,done){//el为动画元素，done为回调函数
+    enter(el,done){//el为动画元素，done为回调函数
       const {x,y,scale}=this._getposandscale();
       let animation={
         0:{
@@ -143,9 +169,84 @@
         x,y,scale
       }
       //返回小图与大图的缩放比例，及x轴距离，y轴距离
-    }
+    },
+    toogelPlaying(){
+      if(!this.songReady){
+        return
+      }
+      this.setPlaying(!this.playing)
+      return;
+    },
+    next(){
+      if(!this.songReady){
+        return
+      }
+      let index=this.curIndex+1;
+      if(index === this.playlist.length){
+        index=0;
+      }
+      this.setCurIndex(index)
+      if(!this.playing){
+        this.toogelPlaying();
+      }
+      this.songReady=false;
+      console.log(this.songReady)
+    },
+    prev(){
+      if(!this.songReady){
+        return
+      }
+      let index=this.curIndex-1;
+      if(index ===-1 ){
+        index=this.playlist.length-1;
+      }
+      this.setCurIndex(index)
+      if(!this.playing){
+        this.toogelPlaying();
+      }
+      this.songReady=false;
+    },
+    ready(){
+      this.songReady=true;
+      console.log(this.songReady)
+    },
+    updateTime(e){
+      this.curTime= e.target.currentTime;//媒体当前播放时间，e为事件，target为事件对象
+    },//获取当前媒体播放时间进度
+    format(interval){
+      interval=interval | 0;//或零等同于Math.floor
+      const minute=interval/60 | 0;
+      const seconds=this._pad(interval%60);
+      return `${minute}:${seconds}`
+
+    },//格式化当前时间，显示分秒
+    _pad(num,n=2){
+      let len=num.toString().length;
+      while(len<n){
+        num='0'+num
+        len++;
+      }
+      return num
+    }//num需要格式化的数字，n为格式化的位数
+    //格式化歌曲播放时间
+  },
+  watch:{
+    curSong(){
+      this.$nextTick(()=>{
+        this.$refs.audio.play()
+      })
+    },
+    playing(newplaying){
+      const audio=this.$refs.audio
+      this.$nextTick(()=>{
+      newplaying?audio.play():audio.pause()
+    })
   }
-    }
+    },
+  components:{
+    ProgressBar
+  }
+  }
 </script>
 
 
@@ -215,11 +316,38 @@
           }
         }
       }
+  .play{
+    animation: rotate 20s linear infinite;
+  }
+  .pause{
+    animation-play-state: paused;
+     }
     }
   }
   .bottom{
   position:relative;
   margin-top:250px;
+  .progress-warpper{
+  display:flex;
+  align-item:center;
+  witdh:80%;
+  margin:0px auto;
+  pading:10px 0;
+    .time{
+      color: $iconColor;
+      flex:0 0 50px;
+      line-height: 50px;
+    }
+    .time-l{
+      text-align: left;
+    }
+    .time-r{
+      text-align: right;
+    }
+    .progress-bar-warpper{
+      flex: 1;
+    }
+  }
     .opeators{
       display: flex;
   .i-left,.i-center,.i-right{
@@ -229,6 +357,7 @@
       font-size: $iconSize;
       color:$iconColor;
     }
+
   }
     }
 
@@ -268,9 +397,21 @@
           color: rgba(146, 138, 151, 0.93);
         }
   }
+  .play{
+    animation: rotate 20s linear infinite;
+  }
+  .pause{
+    animation-play-state: paused;
+  }
+  .iconplay{
+    display: inline-block;
+    font-size: 60px;
+    color: $iconColor;
+  }
     .control{
     float:right;
-    .icon-random{
+  .icon-random{
+    margin-left: 10px;
       font-size: 60px;
       color: $iconColor;
     }
@@ -303,5 +444,13 @@
   }
   .mini-enter,.mini-leave-active{
     opacity: 0;
+  }
+  @keyframes rotate {
+    0%{
+      transform:  rotate(0);
+    }
+    100%{
+      transform: rotate(360deg);
+    }
   }
 </style>
