@@ -30,7 +30,7 @@
       <div class="progress-warpper">
         <span class="time time-l">{{format(curTime)}}</span>
         <div class="progress-bar-warpper">
-          <progress-bar :precent="precent"></progress-bar>
+          <progress-bar :precent="precent" @updatePrecent="updatePrecent"></progress-bar>
         </div>
         <span class="time time-r">{{format(curSong.duration)}}</span>
       </div>
@@ -64,8 +64,10 @@
       <p class="desc" v-html="curSong.singer"></p>
     </div>
     <div class="control">
-      <div :class="['iconplay','iconfont',playIcon]" @click.stop="toogelPlaying">
-      </div>
+      <progress-circle :radius="40" :precent="precent">
+        <div :class="['iconplay','iconfont',playIcon]" @click.stop="toogelPlaying">
+        </div>
+      </progress-circle>
       <i class="iconfont icon-random"></i>
     </div>
   </div>
@@ -82,6 +84,7 @@
   import {mapMutations} from 'vuex'
   import{prefixStyle} from 'res/scripts/dom.js'
   import ProgressBar from 'com/base/progress-bar/progress-bar'
+  import ProgressCircle from 'com/base/progress-circle/progress-circle'
   import animations from 'create-keyframe-animation'
 
   const transform=prefixStyle('transform')
@@ -227,8 +230,14 @@
         len++;
       }
       return num
-    }//num需要格式化的数字，n为格式化的位数
+    },//num需要格式化的数字，n为格式化的位数
     //格式化歌曲播放时间
+    updatePrecent(precent){
+      this.$refs.audio.currentTime=this.curSong.duration * precent;//播放进度等于总宽度*百分比值
+    if(!this.playing){
+      this.toogelPlaying()
+    }
+    }
   },
   watch:{
     curSong(){
@@ -244,7 +253,7 @@
   }
     },
   components:{
-    ProgressBar
+    ProgressBar,ProgressCircle
   }
   }
 </script>
@@ -404,6 +413,9 @@
     animation-play-state: paused;
   }
   .iconplay{
+    position: absolute;
+    left: 5px;
+    top: 1px;
     display: inline-block;
     font-size: 60px;
     color: $iconColor;
@@ -411,7 +423,9 @@
     .control{
     float:right;
   .icon-random{
+    position: relative;
     margin-left: 10px;
+    margin-bottom: 10px;
       font-size: 60px;
       color: $iconColor;
     }
