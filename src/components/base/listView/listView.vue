@@ -194,11 +194,11 @@
 
 <style scoped lang="scss">
   .singerGroup{
+
     overflow: hidden;
-    position: fixed;
-    top: 140px;
-    bottom: 0;
-    width:100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
     ul{
       .singer_title{  margin-bottom:20px;
       h2{padding:0 30px;font-size: 36px;color: #cac2c3;background: #eee7f1;font-weight: bold;}

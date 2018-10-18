@@ -120,5 +120,10 @@ http://isure.stream.qqmusic.qq.com/C400003aAYrm3GE0Ac.m4a?vkey=9D0280BC90D4C7FC5
 
 
 <style scoped lang="scss">
-
+.singerlist{
+  position: fixed;
+top: 140px;
+bottom: 0;
+width: 100%;
+}
 </style>

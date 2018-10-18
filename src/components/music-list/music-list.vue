@@ -5,6 +5,7 @@
   </div>
   <h1 class="title" v-html="title" ></h1>
   <div class="bg-image" :style="bgStyle" ref="bgImage">
+    <div class="randomPlay" @click="random" ref="randomBtn">随机播放全部</div>
     <div class="filter"  ref="filter" ></div>
   </div>
   <div class="bg-layer" ref="layer"></div>
@@ -77,10 +78,12 @@
       if(newY<this.minHeight){
         zIndex=200;
         this.$refs.bgImage.style.paddingTop=0;
+        this.$refs.randomBtn.style.display='none'
         this.$refs.bgImage.style.height=`${RESERVET_HEIGHT}px`
       }else{
         this.$refs.bgImage.style.paddingTop=`70%`;
         this.$refs.bgImage.style.height=`0`
+        this.$refs.randomBtn.style.display='block'
       }
       this.$refs.bgImage.style.zIndex=zIndex;
       this.$refs.bgImage.style[`transform`]=`scale(${sCale})`
@@ -97,7 +100,6 @@
   },
   methods:{
     toSinger(){
-      console.log('ddd')
       this.$router.push({
         path:'/singer'
       })
@@ -106,14 +108,19 @@
       this.ScrollY=pos.y;
     },
     selectSong(item,index) {
-      console.log(item,index)
       this.selectPlay({
         list:this.songs,
         index
       })
     },
+    random(){
+      this.randomPlay({
+        list:this.songs
+      })
+    },
     ...mapActions([
-    'selectPlay'
+    'selectPlay',
+    'randomPlay'
   ])
   }
 
@@ -164,9 +171,23 @@
   padding-top:70%;/*等于宽度的70%；padding-top和padding-bottom有个隐藏属性，当值为百分比的时候，其分母取的是父级容器宽度而非高度*/
     background-repeat: no-repeat;
     background-size: cover;
-    .filter{
+.randomPlay{
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  padding: 5px 8px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 5px;
+  color: #b5a23e;
+  transform: translateX(-50%);
+  border: 2px solid #b5a23e;
+}
+.filter{
 
     }
+
   }
 .bg-layer{
   z-index: 101;

@@ -35,8 +35,8 @@
         <span class="time time-r">{{format(curSong.duration)}}</span>
       </div>
       <div class="opeators">
-        <div class="icon i-left">
-          <i class="iconfont icon-random"></i>
+        <div class="icon i-left" @click="changeMode">
+          <i :class="['iconfont',iconMode]"></i>
         </div>
         <div class="icon i-left">
           <i class="iconfont icon-281-previous" @click="prev"></i>
@@ -68,13 +68,14 @@
         <div :class="['iconplay','iconfont',playIcon]" @click.stop="toogelPlaying">
         </div>
       </progress-circle>
-      <i class="iconfont icon-random"></i>
+      <i :class="['iconfont',iconMode]" @click.stop="changeMode" ></i>
     </div>
   </div>
   </transition>
   <audio :src="curSong.url" ref="audio"
          @canplay="ready"
          @timeupdate="updateTime"
+         @ended="end"
     ></audio>
 </div>
 </template>
@@ -83,9 +84,11 @@
   import {mapGetters} from 'vuex'
   import {mapMutations} from 'vuex'
   import{prefixStyle} from 'res/scripts/dom.js'
+  import {shuffle} from 'res/scripts/util'
   import ProgressBar from 'com/base/progress-bar/progress-bar'
   import ProgressCircle from 'com/base/progress-circle/progress-circle'
   import animations from 'create-keyframe-animation'
+  import {playMode} from '../../store/config'
 
   const transform=prefixStyle('transform')
     export default{
@@ -97,7 +100,7 @@
         },
   computed:{
   ...mapGetters([
-      'fullScreen','playlist','curSong','playing','curIndex'
+      'fullScreen','playlist','curSong','playing','curIndex','mode','sequencelist'
     ]),
     playIcon(){
       return this.playing?'icon-pausecircle':'icon-play'
@@ -107,13 +110,18 @@
     },
     precent(){
       return this.curTime/this.curSong.duration
+    },
+    iconMode(){
+      return this.mode === playMode.sequence ? 'icon-icon_sequence' : this.mode === playMode.loop ? 'icon-iosloopstrong':'icon-random'
     }
   },
   methods:{
   ...mapMutations({
       setFullScreen:'SET_FULL_SCREEN',
       setPlaying:'SET_PLAYING_STATE',
-      setCurIndex:'SET_CURINDEX'
+      setCurIndex:'SET_CURINDEX',
+      setPlayMode:'SET_PLAYING_MODE',
+      setPlaylist:'SET_PLAYLIST'
     }),
     back(){
       this.setFullScreen(false)
@@ -211,7 +219,6 @@
     },
     ready(){
       this.songReady=true;
-      console.log(this.songReady)
     },
     updateTime(e){
       this.curTime= e.target.currentTime;//媒体当前播放时间，e为事件，target为事件对象
@@ -237,10 +244,46 @@
     if(!this.playing){
       this.toogelPlaying()
     }
+    },
+    changeMode(){
+      const mode= (this.mode+1)%3;//循环切换模式
+      this.setPlayMode(mode);
+      let list=null;
+      if(mode===playMode.random){
+        list=shuffle(this.sequencelist)
+      }else{
+        list=this.sequencelist
+      }
+      console.log(mode,list)
+      this.resetCurIndex(list)
+      this.setPlaylist(list)
+    },
+    resetCurIndex(list){
+      console.log(this.curSong.name)
+      let index = list.findIndex((item)=>{
+        return item.id === this.curSong.id;
+      })
+      console.log(index)
+      this.setCurIndex(index);
+    },
+    end(){
+      if(this.mode !== playMode.loop){
+        this.next();
+
+      }else{
+        this.loop()
+      }
+    },
+    loop(){
+      this.$refs.audio.currentTime=0;
+      this.$refs.audio.play();
     }
   },
   watch:{
-    curSong(){
+    curSong(newSong,oldSong){
+      if(newSong.id===oldSong){
+        return;
+      }
       this.$nextTick(()=>{
         this.$refs.audio.play()
       })
@@ -251,6 +294,7 @@
       newplaying?audio.play():audio.pause()
     })
   }
+
     },
   components:{
     ProgressBar,ProgressCircle
@@ -261,7 +305,7 @@
 
 <style scoped lang="scss">
   .normarl-player{
-    z-index: 101;
+    z-index: 150;
     position: fixed;
     top: 0;
     left: 0;
@@ -276,6 +320,7 @@
     top:0;
     width:100%;
     height:100%;
+    z-index:-1;
       img{
     width:100%;
     height:100%;
@@ -288,6 +333,7 @@
   position:absolute;
   left:0;
   top:0;
+  z-index: 50;
     .iconfont{
       width: 60px;
       height: 60px;
@@ -374,7 +420,7 @@
 
   }
   .mini-player{
-    z-index: 101;
+    z-index: 180;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -422,13 +468,10 @@
   }
     .control{
     float:right;
-  .icon-random{
-    position: relative;
-    margin-left: 10px;
-    margin-bottom: 10px;
-      font-size: 60px;
-      color: $iconColor;
-    }
+  .iconfont{
+    font-size: $iconSize;
+    color:$iconColor;
+  }
     }
   }
 .background:after{
@@ -451,7 +494,7 @@
   }
   .normal-leave-active{
     transform:translate3d(0,100px,0);
-    opacity: 0;
+    display:none;
   }
   .mini-enter-active,.mini-leave-active{
     transition: all .1s;

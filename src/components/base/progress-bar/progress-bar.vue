@@ -70,7 +70,6 @@
       precent(newPrecent){
         if(newPrecent>= 0 && !this.touch.initiated){//百分比更新必须在每有移动且进度条大于零才有效
           const barWidth=this.$refs.progressBar.clientWidth-progressBtnWidth;
-          console.log(this.$refs.progressBar.clientWidth)
           //当前进度条宽度等于总宽度减去按钮宽度
           const offsetWidth=barWidth*newPrecent;
           //当前进度等于总宽度乘以百分比
