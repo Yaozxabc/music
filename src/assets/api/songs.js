@@ -1,10 +1,14 @@
 /**
  * Created by Administrator on 2018/9/9.
  */
-import Jsonp from 'res/scripts/jsonp'
 import {options,commonParams,ERR_ok} from 'res/api/config'
+import Jsonp from  'res/scripts/jsonp'
+import {param} from  'res/scripts/jsonp'
+import  axios from 'axios'
+import {Base64} from 'js-base64'
+
 export default class song{
-  constructor({id,mid,singer,url,name,album,duration,image}){
+  constructor({id,mid,singer,url,name,album,duration,image,vkey}){
     this.id=id;
     this.mid=mid;
     this.url=url;
@@ -13,6 +17,24 @@ export default class song{
     this.duration=duration;
     this.singer=singer;
     this.image=image;
+    this.vkey=vkey
+  }
+  _getlyric(){
+      if(this.lyrics){
+        return Promise.resolve(this.lyrics)
+      }
+      return new Promise((resolve,reject)=>{
+        getLyric(this.mid).then((res)=>{
+          if(res.retcode == ERR_ok){
+            this.lyrics=Base64.decode(res.lyric)//将64为字符串解码为字符串
+            resolve(this.lyrics)
+          }else{
+            reject('error')
+          }
+        })
+      })
+
+
   }
 }
 //设计成类的两大好处，
@@ -27,8 +49,8 @@ export function createSong(musicData){
     album:musicData.albumname,
     duration:musicData.interval,
     image:`http://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url:`http://isure.stream.qqmusic.qq.com/C400001J5QJL1pRQYB.m4a?guid=7160149260&vkey=369B29F5A0042338EE93E03C6F3DED38A97BC1C0B983EE69810DEAB95A8E61F100D71739E3291B659E4E93666D47D13851087BF4E3F9D2FD&uin=0&fromtag=66`
-
+    url:`http://110.52.197.20/amobile.music.tc.qq.com/C4000039MnYb0qxYhV.m4a?guid=7160149260&vkey=4BC8DD688AC5206D091DA34A07782A8B150169413AE16A3D2C6BA0200822FDE969FB61D4EED520DD36E72AB66D2AF09E28247771DCCAEE0C&uin=0&fromtag=66`,
+    vkey:'dd'
   })
 }
 
@@ -46,20 +68,46 @@ function filterSinger(singers){
 export function getVkey(musicData){
  const url='https://u.y.qq.com/cgi-bin/musicu.fcg?'
   const data=Object.assign({},commonParams,{
-    callback:'getplaysongvkey013206165477022802',
-    g_tk:5381,
     format:'jsonp',
     loginUin:0,
     hostUin:0,
     platform:'yqq',
     needNewCode:0,
-    data:`{"req_0":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"guid":"7160149260","songmid":[${musicData.songmid}],"songtype":[0],"uin":"0","loginflag":1,"platform":"20"}},"comm":{"uin":0,"format":"json","ct":20,"cv":0}}`
+    data:`{"req":{"module":"CDN.SrfCdnDispatchServer","method":"GetCdnDispatch","param":{"guid":"7160149260","calltype":0,"userip":""}},"req_0":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"guid":"7160149260","songmid":[${musicData.songmid}],"songtype":[0],"uin":"0","loginflag":1,"platform":"20"}},"comm":{"uin":0,"format":"json","ct":20,"cv":0}}`
   })
-  const option={
-    param:'jsonpCallback',
-    prefix:'getplaysongvkey013206165477022802'
-  }
-var self=Jsonp(url,data).then((res)=>{
-
+ // const option={
+ //   param:'jsonpCallback',
+ //   prefix:'getplaysongvkey5650244556143691'
+  axios.post(url,data).then((res)=>{
+    console.log('ddd')
   })
 }
+
+function getLyric(mid){
+  var url='/lyrics'+'/music/api/lyric?'
+  const data=Object.assign({},commonParams,{
+    g_tk:1928093487,
+    inCharset:'utf-8',
+    outCharset:'utf-8',
+    notice:0,
+    format:'json',
+    songmid:mid,
+      platform:'yqq',
+  hostUin:0,
+  needNewCode:0,
+  categoryId:10000000,
+  pcachetime:+new Date()
+  })
+  const option={
+    param:'callback',
+    prefix:'MusicJsonCallback_lrc'
+  }
+  return axios.get(url,{
+    params:data
+  }).then((res)=>{
+return Promise.resolve(res.data)
+  })
+
+}
+
+

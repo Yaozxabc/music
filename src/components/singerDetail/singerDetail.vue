@@ -40,7 +40,6 @@
       }
       getSingerDetail(this.singer.id).then((res)=>{
         this.songs=this._normalizeSongs(res.data.list)
-
         console.log(this.songs)
       })
     },
@@ -51,7 +50,7 @@
         if(musicData.songid && musicData.albummid){
           ret.push(createSong(musicData))
         }
-      getVkey(musicData)
+
       })
 
       return ret;

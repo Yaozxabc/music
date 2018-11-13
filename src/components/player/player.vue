@@ -18,13 +18,23 @@
       <h2 class="subtitle" v-html="curSong.singer"></h2>
     </div>
     <div class="middle">
-      <div class="middle-l">
+      <div class="middle-l" v-show="show">
         <div :class="['cd-warpper',cdPlay]" ref="cdWarpper">
           <div class="cd">
             <img :src="curSong.image" alt="" class="image"/>
           </div>
         </div>
       </div>
+      <scroll  class="middle-r" ref="lyriclist" :data="currentLyric && currentLyric.lines">
+        <div class="lyric-warpper">
+          <div v-if="currentLyric">
+            <p ref="lyricLine"
+              :class="['text',{active:currentLyriclineNum === index}]"
+               v-for="(line,index) in currentLyric.lines"
+              >{{line.txt}}</p>
+          </div>
+        </div>
+      </scroll>
     </div>
     <div class="bottom">
       <div class="progress-warpper">
@@ -84,18 +94,24 @@
   import {mapGetters} from 'vuex'
   import {mapMutations} from 'vuex'
   import{prefixStyle} from 'res/scripts/dom.js'
+  import Scroll from 'com/base/scroll'
   import {shuffle} from 'res/scripts/util'
   import ProgressBar from 'com/base/progress-bar/progress-bar'
   import ProgressCircle from 'com/base/progress-circle/progress-circle'
   import animations from 'create-keyframe-animation'
   import {playMode} from '../../store/config'
+  import Lyric from 'lyric-parser'
+
 
   const transform=prefixStyle('transform')
     export default{
         data(){
             return {
               songReady:false,
-              curTime:0
+              curTime:0,
+              currentLyric:null,
+              currentLyriclineNum:0,
+              show:false
             }
         },
   computed:{
@@ -239,6 +255,23 @@
       return num
     },//num需要格式化的数字，n为格式化的位数
     //格式化歌曲播放时间
+    getLyric(){
+      this.curSong._getlyric().then((lyric)=>{
+        this.currentLyric=new Lyric(lyric,this.handlelyric)//传入接析歌词，及回调函数https://github.com/ustbhuangyi/lyric-parser
+        if(this.playing){
+          this.currentLyric.play()
+        }
+      })
+    },
+    handlelyric({lineNum,txt}){
+      this.currentLyriclineNum=lineNum
+      if(lineNum>5){
+        let LineEl=this.$refs.lyricLine[lineNum-5];//定位第五行歌词的序号
+        this.$refs.lyriclist.scrollToElement(LineEl,1000)
+      }else{
+        this.$refs.lyriclist.scrollTo(0,0,1000)
+      }
+    },
     updatePrecent(precent){
       this.$refs.audio.currentTime=this.curSong.duration * precent;//播放进度等于总宽度*百分比值
     if(!this.playing){
@@ -254,16 +287,13 @@
       }else{
         list=this.sequencelist
       }
-      console.log(mode,list)
       this.resetCurIndex(list)
       this.setPlaylist(list)
     },
     resetCurIndex(list){
-      console.log(this.curSong.name)
       let index = list.findIndex((item)=>{
         return item.id === this.curSong.id;
       })
-      console.log(index)
       this.setCurIndex(index);
     },
     end(){
@@ -286,6 +316,7 @@
       }
       this.$nextTick(()=>{
         this.$refs.audio.play()
+        this.getLyric()
       })
     },
     playing(newplaying){
@@ -297,7 +328,7 @@
 
     },
   components:{
-    ProgressBar,ProgressCircle
+    ProgressBar,ProgressCircle,Scroll
   }
   }
 </script>
@@ -378,10 +409,33 @@
     animation-play-state: paused;
      }
     }
+  .middle-r{
+  position:absolute;
+  left:0;
+  top:0;
+    bottom: 0;
+    width: 100%;
+    .lyric-warpper{
+      width: 80%;
+      margin: 0 auto;
+      text-align:center;
+      .text{
+        margin-top: 20px;
+        font-size: 25px;
+        color: #dddddd;
+        opacity: 0.6;
+      }
+      .active{
+        opacity:1;
+      }
+    }
+  }
   }
   .bottom{
-  position:relative;
-  margin-top:250px;
+  position:absolute;
+    left: 5%;
+    right: 5%;
+    bottom: 5%;
   .progress-warpper{
   display:flex;
   align-item:center;

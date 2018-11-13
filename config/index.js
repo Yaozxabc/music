@@ -26,6 +26,20 @@ module.exports = {
       pathRewrite:{
         '^/singer':''
       }
+      },
+    '/song':{
+      target:'https://u.y.qq.com',
+      changeOrigin:true,
+      pathRewrite:{
+        '^/song':''
+      }
+      },
+      '/lyrics':{
+        target:'http://ustbhuangyi.com',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/lyrics':''
+        }
       }
     },
     // Various Dev Server settings
