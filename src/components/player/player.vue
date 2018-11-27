@@ -17,8 +17,12 @@
       <h1 class="title" v-html="curSong.name"></h1>
       <h2 class="subtitle" v-html="curSong.singer"></h2>
     </div>
-    <div class="middle">
-      <div class="middle-l" v-show="show">
+    <div class="middle"
+      @touchstart="middleTouchStart"
+      @touchmove="middleTouchMove"
+      @touchend="middleTouchEnd"
+      >
+      <div class="middle-l" ref="middleL">
         <div :class="['cd-warpper',cdPlay]" ref="cdWarpper">
           <div class="cd">
             <img :src="curSong.image" alt="" class="image"/>
@@ -37,6 +41,10 @@
       </scroll>
     </div>
     <div class="bottom">
+      <div class="dot_warp">
+        <span :class="['dot',{'active':currentShow==='cd'}]"></span>
+        <span :class="['dot',{'active':currentShow==='lyric'}]"></span>
+      </div>
       <div class="progress-warpper">
         <span class="time time-l">{{format(curTime)}}</span>
         <div class="progress-bar-warpper">
@@ -102,8 +110,9 @@
   import {playMode} from '../../store/config'
   import Lyric from 'lyric-parser'
 
-
   const transform=prefixStyle('transform')
+  const transitionDuration=prefixStyle('transitionDuration')
+
     export default{
         data(){
             return {
@@ -111,9 +120,13 @@
               curTime:0,
               currentLyric:null,
               currentLyriclineNum:0,
-              show:false
+              show:true,
+              currentShow:"cd"
             }
         },
+  created(){
+    this.touch={}
+  },
   computed:{
   ...mapGetters([
       'fullScreen','playlist','curSong','playing','curIndex','mode','sequencelist'
@@ -129,7 +142,8 @@
     },
     iconMode(){
       return this.mode === playMode.sequence ? 'icon-icon_sequence' : this.mode === playMode.loop ? 'icon-iosloopstrong':'icon-random'
-    }
+    },
+
   },
   methods:{
   ...mapMutations({
@@ -272,6 +286,61 @@
         this.$refs.lyriclist.scrollTo(0,0,1000)
       }
     },
+    middleTouchStart(e){
+      this.touch.initiated=true;//是否循环
+      const touch= e.touches[0];
+      this.touch.startX=touch.pageX;
+      this.touch.starY=touch.pageY;
+
+    },
+    middleTouchMove(e){
+      if(!this.touch.initiated){
+        return;
+      }
+      const touch= e.touches[0];
+
+      const deltaX=touch.pageX-this.touch.startX;
+      const deltaY=touch.pageY-this.touch.startY;
+      if(Math.abs(deltaY)>Math.abs(deltaX)){
+        return;
+      }
+      //定义右边歌词页面的位置
+      const left=this.currentShow==="cd" ? 0 : -window.innerWidth;
+      //定义歌词页面的偏移值；
+      const oWidth=Math.min(0,Math.max(-window.innerWidth,left+deltaX));
+      this.touch.precent=Math.abs(oWidth/window.innerWidth)
+      this.$refs.lyriclist.$el.style[transform]=`translate3d(${oWidth}px,0,0)`
+      this.$refs.middleL.style.opacity=1-this.touch.precent;
+      this.$refs.middleL.style[transitionDuration]=`0`
+    },
+    middleTouchEnd(e){
+     let offsetWidth;
+      let opacity;
+      if(this.currentShow==="cd"){
+        if(this.touch.precent>0.1){
+          offsetWidth =-window.innerWidth+20;
+          opacity=0;
+          this.currentShow="lyric"
+        }else{
+          offsetWidth=0;
+          opacity=1;
+        }
+      }else{
+        if(this.touch.precent<0.9){
+          offsetWidth =20;
+          this.currentShow="cd";
+          opacity=1;
+        }else{
+          offsetWidth=-window.innerWidth;
+          opacity=0;
+        }
+      }
+      const time=300
+      this.$refs.lyriclist.$el.style[transform]=`translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyriclist.$el.style[transitionDuration]=`${time}ms`
+      this.$refs.middleL.style.opacity=opacity;
+      this.$refs.middleL.style[transitionDuration]=`0`
+    },
     updatePrecent(precent){
       this.$refs.audio.currentTime=this.curSong.duration * precent;//播放进度等于总宽度*百分比值
     if(!this.playing){
@@ -386,7 +455,14 @@
   }
   .middle{
   position:relative;
+    overflow: hidden;
+  height:750px;
     .middle-l{
+      position:absolute;
+      left:0;
+      top:0;
+      bottom: 0;
+      width: 100%;
       .cd-warpper{
         width:600px;
         height:600px;
@@ -402,40 +478,49 @@
           }
         }
       }
+  }
+  .middle-r{
+    position:absolute;
+    left:100%;
+    top:0;
+    bottom: 0;
+    width: 100%;
+  .lyric-warpper{
+    width: 80%;
+    margin: 0 auto;
+    text-align:center;
+  .text{
+    margin-top: 20px;
+    font-size: 25px;
+    color: #dddddd;
+    opacity: 0.6;
+  }
+  .active{
+    opacity:1;
+  }
+  }
+  }
   .play{
     animation: rotate 20s linear infinite;
   }
   .pause{
     animation-play-state: paused;
      }
-    }
-  .middle-r{
-  position:absolute;
-  left:0;
-  top:0;
-    bottom: 0;
-    width: 100%;
-    .lyric-warpper{
-      width: 80%;
-      margin: 0 auto;
-      text-align:center;
-      .text{
-        margin-top: 20px;
-        font-size: 25px;
-        color: #dddddd;
-        opacity: 0.6;
-      }
-      .active{
-        opacity:1;
-      }
-    }
-  }
   }
   .bottom{
   position:absolute;
     left: 5%;
     right: 5%;
     bottom: 5%;
+  .dot_warp{
+    z-index: 51;
+  position:absolute;
+  top:-50%;
+  left:calc(50% - 40px);
+    .dot{background: #fff;display:inline-block;height: 20px;width:20px;border-radius: 10px;}
+    .active{height: 20px;width: 40px;}
+
+  }
   .progress-warpper{
   display:flex;
   align-item:center;

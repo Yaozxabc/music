@@ -46,8 +46,7 @@
         .content{
         border-bottom:1px dotted #dddddd;
           .name{font-size:30px;color: #f0f7ff}
-          .desc{font-size:25px;color: #8c8585
-          }
+          .desc{font-size:25px;color: #8c8585}
         }
       }
     }
