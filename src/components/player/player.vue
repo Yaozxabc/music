@@ -28,6 +28,11 @@
             <img :src="curSong.image" alt="" class="image"/>
           </div>
         </div>
+        <div class="playingLyric_warp">
+          <div class="playingLyric">
+            {{playingLyric}}
+          </div>
+        </div>
       </div>
       <scroll  class="middle-r" ref="lyriclist" :data="currentLyric && currentLyric.lines">
         <div class="lyric-warpper">
@@ -121,7 +126,8 @@
               currentLyric:null,
               currentLyriclineNum:0,
               show:true,
-              currentShow:"cd"
+              currentShow:"cd",
+              playingLyric:""
             }
         },
   created(){
@@ -216,36 +222,46 @@
         return
       }
       this.setPlaying(!this.playing)
-      return;
+     if(this.currentLyric){
+       this.currentLyric.togglePlay()
+     }
     },
     next(){
       if(!this.songReady){
         return
       }
-      let index=this.curIndex+1;
-      if(index === this.playlist.length){
-        index=0;
+      if(this.playlist.length===1){
+        this.loop()
+      }else {
+        let index = this.curIndex + 1;
+        if (index === this.playlist.length) {
+          index = 0;
+        }
+        this.setCurIndex(index)
+        if (!this.playing) {
+          this.toogelPlaying();
+        }
+        this.songReady = false;
+        console.log(this.songReady)
       }
-      this.setCurIndex(index)
-      if(!this.playing){
-        this.toogelPlaying();
-      }
-      this.songReady=false;
-      console.log(this.songReady)
     },
     prev(){
       if(!this.songReady){
         return
       }
-      let index=this.curIndex-1;
-      if(index ===-1 ){
-        index=this.playlist.length-1;
+      if(this.playlist.length===1){
+        this.loop()
+      }else {
+        let index = this.curIndex - 1;
+        if (index === -1) {
+          index = this.playlist.length - 1;
+        }
+        this.setCurIndex(index)
+        if (!this.playing) {
+          this.toogelPlaying();
+        }
+        this.songReady = false;
       }
-      this.setCurIndex(index)
-      if(!this.playing){
-        this.toogelPlaying();
-      }
-      this.songReady=false;
     },
     ready(){
       this.songReady=true;
@@ -275,6 +291,10 @@
         if(this.playing){
           this.currentLyric.play()
         }
+      }).catch(()=>{
+        this.currentLyric=null;
+        this.playinfLyric="";
+        this.currentLineNum=0;
       })
     },
     handlelyric({lineNum,txt}){
@@ -285,6 +305,7 @@
       }else{
         this.$refs.lyriclist.scrollTo(0,0,1000)
       }
+      this.playingLyric=txt;
     },
     middleTouchStart(e){
       this.touch.initiated=true;//是否循环
@@ -342,10 +363,14 @@
       this.$refs.middleL.style[transitionDuration]=`0`
     },
     updatePrecent(precent){
-      this.$refs.audio.currentTime=this.curSong.duration * precent;//播放进度等于总宽度*百分比值
+      const currnetTime=this.curSong.duration
+      this.$refs.audio.currentTime= currnetTime* precent;//播放进度等于总宽度*百分比值
     if(!this.playing){
       this.toogelPlaying()
     }
+      if(this.currentLyric){
+        this.currentLyric.seek(currnetTime*1000)
+      }//同步歌词播放
     },
     changeMode(){
       const mode= (this.mode+1)%3;//循环切换模式
@@ -376,12 +401,18 @@
     loop(){
       this.$refs.audio.currentTime=0;
       this.$refs.audio.play();
+      if(this.currentLyric){
+        this.currentLyric.seek(0)//循环模式下，设置歌词回零
+      }
     }
   },
   watch:{
     curSong(newSong,oldSong){
       if(newSong.id===oldSong){
         return;
+      }
+      if(this.currentLyric){
+        this.currentLyric.stop()
       }
       this.$nextTick(()=>{
         this.$refs.audio.play()
@@ -478,6 +509,16 @@
           }
         }
       }
+  .playingLyric_warp{
+    width: 100%;
+    .playingLyric{
+      width: 80%;
+      margin: 0 auto;
+      font-size: 25px;
+      color: #dddddd;
+      text-align: center;
+    }
+  }
   }
   .middle-r{
     position:absolute;
