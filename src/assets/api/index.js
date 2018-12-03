@@ -26,10 +26,25 @@ const singerData=Object.assign({},commonParams,{
   platform:'yqq',
   needNewCode:0
 })
+const discData=Object.assign({},commonParams,{
+  type:"1",
+  json:"1",
+  utf8:"1",
+  onlysong:"0",
+  disstid:"4804070615",
+  jsonpCallback:"playlistinfoCallback",
+  loginUin:0,
+  hostUin:0,
+  inCharset:'utf8',
+  outCharset:'utf-8',
+  notice:0,
+  platform:'yqq',
+  needNewCode:0,
+})
 export default{
   // 产品相关操作
   sliderList:'/api'+'/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?'+param(data), // 产品列表
-  playlists:'/music'+"weapi/v3/playlist/detail", // 产品详情
+  disclists:'/disc'+"/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg?"+param(discData), // 产品详情
   singerList:'/singer'+'/cgi-bin/musicu.fcg?'+param(singerData), // 歌手列表
   // 社区相关操作
   articleList:'/api/article/articleList', // 文章列表

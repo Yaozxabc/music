@@ -40,6 +40,13 @@ module.exports = {
         pathRewrite:{
           '^/lyrics':''
         }
+      },
+      '/disc':{
+        target:'https://c.y.qq.com',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/disc':''
+        }
       }
     },
     // Various Dev Server settings

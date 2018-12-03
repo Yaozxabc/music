@@ -27,8 +27,10 @@
   import Scroll from 'com/base/scroll'
   import SongList from 'com/base/songlist/songlist'
   import {mapActions} from 'vuex'
+  import {playlistMixin} from 'res/scripts/mixin'
   const RESERVET_HEIGHT=35;
     export default{
+      mixins:[playlistMixin],
       props:{
         bgImage:{
           type:String,
@@ -99,6 +101,11 @@
     this.$refs.list.$el.style.top=this.imgHeight+'px'
   },
   methods:{
+    handlePlaylist(){
+      const bottom=this.playlist.length>0 ? "80px": "0"
+      this.$refs.list.$el.style.bottom=bottom;
+      this.$refs.list.refresh()
+    },
     toSinger(){
       this.$router.push({
         path:'/singer'

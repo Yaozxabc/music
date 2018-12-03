@@ -9,6 +9,7 @@ const state={
   playlist:[],//播放列表
   sequencelist:[],//顺序列表
   mode:playMode.sequence, //播放模式，引用配置，可以随机，顺序，单曲循环
-  curIndex:-1//当前播放索引序列
+  curIndex:-1,//当前播放索引序列
+  disc:{}
 }
 export default state;

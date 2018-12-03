@@ -1,27 +1,32 @@
 <template>
-<div class="singerlist">
-<listView :data="singerlist" @select="toDetail"></listView>
+<div class="singerlist" ref="singerlist">
+<listView :data="singerlist" @select="toDetail" ref="singer"></listView>
   <router-view></router-view>
 </div>
 </template>
-http://isure.stream.qqmusic.qq.com/C400003OUlho2HcRHC.m4a?vkey=80C78AD4F8CBB172DF4D622932E1E7006134EA9AF9657E94ADFA0A65170B78AFBD6B42FC553D95A7DCA349A9FE717A88C38E622D9097BEE5&guid=3022422968&uin=0&fromtag=66
-http://isure.stream.qqmusic.qq.com/C400001J5QJL1pRQYB.m4a?vkey=A1AA88A92020CA05A4A2D45C9DDF032110445355C0A889D63CBADD1948EC067B6AE5D27A946F69CF44DF4249916BBD159E4FE4F35C6FB05E&guid=3022422968&uin=0&fromtag=66
-http://isure.stream.qqmusic.qq.com/C400003aAYrm3GE0Ac.m4a?vkey=9D0280BC90D4C7FC5970F8B16D242DA4E0E3D3FFED7911B2D3C1B40A5B5A6D2BED0B8F9538D971699011DD998FDA63D4F3528EBD19913F86&guid=3022422968&uin=0&fromtag=66
 <script type="text/ecmascript-6">
   import {mapMutations} from 'vuex'
   import Mock from 'mockjs'
   import {MockLetter} from 'res/scripts/MockExtend'
   import {getSinger} from 'res/api/singer.js'
   import listView from 'com/base/listView/listView'
+  import {playlistMixin} from 'res/scripts/mixin'
   const HOT_NAME='热门'//自定义分类的数据
   const HOT_COUNT=10//自定义数据类型的数量
     export default{
+      mixins:[playlistMixin],
         data(){
             return {
               singerlist:[]
             }
         },
     methods:{
+      handlePlaylist(){
+        const bottom=this.playlist.length>0 ? "80px": "0"
+        this.$refs.singerlist.style.bottom=bottom;
+//        this.$refs.singer.$el.style.bottom=bottom;
+        this.$refs.singer.refresh()
+      },
       //获取歌手数据
       _getSingerList(){
         getSinger().then((res)=>{
@@ -121,6 +126,7 @@ http://isure.stream.qqmusic.qq.com/C400003aAYrm3GE0Ac.m4a?vkey=9D0280BC90D4C7FC5
 
 <style scoped lang="scss">
 .singerlist{
+  overflow: hidden;
   position: fixed;
 top: 140px;
 bottom: 0;

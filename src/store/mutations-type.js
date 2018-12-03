@@ -12,3 +12,5 @@ export const  SET_PLAYING_MODE = 'SET_PLAYING_MODE'
 
 export const  SET_CURINDEX = 'SET_CURINDEX'
 
+export const  SET_DISC = 'SET_DISC'
+

@@ -19,3 +19,4 @@ export  const  curIndex=state=>state.curIndex
 export  const curSong=(state)=>{
   return state.playlist[state.curIndex] || {}
 }
+export  const disc=state=>state.disc

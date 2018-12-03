@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="recommend" ref="recommend">
     <scroll class="recommend_content" :data="playlist" ref="scroll" id="recommend_content">
       <div ref="recom">
   <div>
@@ -15,7 +15,7 @@
     <div class="recommend_list">
       <h1>热门歌单推荐</h1>
       <ul>
-        <li v-for="item in playlist">
+        <li v-for="item in playlist" @click="selectItem(item)">
           <div class="icon">
             <img v-lazy="item.imgurl" width="60" height="60" alt=""/>
           </div>
@@ -33,6 +33,7 @@
         <loading></loading>
       </div>
   </scroll>
+    <router-view></router-view>
 </div>
 </template>
 
@@ -43,7 +44,10 @@
   import {getPlayList,getDiscList} from 'res/api/recommend.js'
   import {ERR_ok} from 'res/api/config.js'
   import abc from 'res/api/api.js'
+  import {mapMutations} from 'vuex'
+  import {playlistMixin} from 'res/scripts/mixin'
     export default{
+      mixins:[playlistMixin],
         data(){
             return {
               recommend:[],
@@ -55,6 +59,17 @@
     scroll
   },
   methods:{
+    handlePlaylist(){
+      const bottom =this.playlist.length>0 ? "80px": ""
+      this.$refs.scroll.$el.style.bottom=bottom;
+      this.$refs.scroll.refresh();
+    },
+    selectItem(item){
+      this.$router.push({
+        path:`/recommend/${item.dissid}`
+      })
+      this.setDisc(item);
+    },
     _getcommend(){
       getRecommend().then((res)=>{
         alert(res.data.code)
@@ -116,7 +131,10 @@
       let oHeight=document.documentElement.clientHeight;
       let recom=document.getElementById('recommend_content');
       recom.style.height=oHeight-80+'px';
-    }
+    },
+    ...mapMutations({
+      setDisc:"SET_DISC"
+    })
   },
   created(){
     this._getSliderData()

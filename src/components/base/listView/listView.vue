@@ -82,6 +82,9 @@
     scroll
   },
   methods:{
+    refresh(){
+      this.$refs.listview.refresh()
+    },
     onShortTouchStart(e){
       let authorIndex=getData(e.target,'index');
       //调用getdata方法获取data-index中的值，此处扩展dom中的获取属性值方法getdata
@@ -194,11 +197,10 @@
 
 <style scoped lang="scss">
   .singerGroup{
-
     overflow: hidden;
   position: relative;
   width: 100%;
-  height: 100%;
+  height:100%;
     ul{
       .singer_title{  margin-bottom:20px;
       h2{padding:0 30px;font-size: 36px;color: #cac2c3;background: #eee7f1;font-weight: bold;}
