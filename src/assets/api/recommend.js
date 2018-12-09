@@ -3,6 +3,7 @@
  */
 import {options,commonParams,err_ok} from 'res/api/config'
 import Jsonp from 'res/scripts/jsonp.js'
+import Api from 'res/api/api.js'
 import axios from 'axios'
 //获取轮播图数据
 export function getRecommend(){//自定义获取jsonp数据的处理方法
@@ -11,45 +12,34 @@ export function getRecommend(){//自定义获取jsonp数据的处理方法
  return Jsonp(url,data,options)
 }
 //获取歌单数据，rerfer受限失败
-export  function getPlayList(){
-  const url='https://c.y.qq.com/splcloud/fcgi-bin/p.fcg'
-  const data=Object.assign({},{
-    g_tk:5381,
-    format:'jsonp',
-    picmid:1,
-    rnd:0.3062479912884237,
+export  function getDiscList(dissId){
+  const url = Api.index.disclist
+  const data=Object.assign({},commonParams,{
+    g_tk:1928093487,
+    inCharset:'utf-8',
+    outCharset:'utf-8',
+    notice:0,
+    format:'json',
+    disstid:dissId,
+    type:1,
+    json:1,
+    utf8:1,
+    onlysong:0,
     platform:'yqq',
+    hostUin:0,
     needNewCode:0,
-    categoryId:10000000,
-    sortId:5,
-    sin:0,
-    ein:29,
   })
-  const options={
-    param:'jsonpCallback',
-    prefix:'jsonp1'
-  }
-  console.log(Jsonp(url,data,options))
-  return Jsonp(url,data,options)
+  return axios.get(url,{
+    params:data
+  }).then((res) => {
+    return Promise.resolve(res)
+  })
 }
 //获取失败，权限受限
-export function getDiscList() {
-  const url = '/api/getDiscList'
-  const data = Object.assign({}, commonParams, {
-    platform: 'yqq',
-    hostUin: 0,
-    sin: 0,
-    ein: 29,
-    sortId: 5,
-    needNewCode: 0,
-    categoryId: 10000000,
-    rnd: Math.random(),
-    format: 'json' // 将format从jsonp修改为json
-  })
-  return axios.get(url, {
-    params: data
-  }).then((res) => {
-    return Promise.resolve(res.data)
+export function getPlayList() {
+  const url = Api.index.playlists
+  return axios.get(url).then((res) => {
+    return Promise.resolve(res)
   })
 }
 

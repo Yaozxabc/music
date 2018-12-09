@@ -49,7 +49,7 @@ export function createSong(musicData){
     album:musicData.albumname,
     duration:musicData.interval,
     image:`http://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url:`http://112.90.53.148/amobile.music.tc.qq.com/C400004bRWFg3fej9y.m4a?guid=7160149260&vkey=B81FCB8FAB1C12498D66E131CBAA49A52DDA82E1BD81AD4B09BF550BCD13021382D2872FA920DD915DF6FDC644E8D58A3DE324B2146AC000&uin=0&fromtag=66`,
+    url:musicData.url,
     vkey:'dd'
   })
 }

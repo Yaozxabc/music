@@ -1,6 +1,6 @@
 <template>
   <transition name="slider">
-    <music-list :title="title" :bgImage="bgImage" ></music-list>
+    <music-list :title="title" :bgImage="bgImage" :songs="songlist"></music-list>
     </div>
   </transition>
 </template>
@@ -9,10 +9,13 @@
   import MusicList from 'com/music-list/music-list'
   import api from 'res/api/api'
   import {mapGetters} from 'vuex'
+  import {getDiscList} from 'res/api/recommend.js'
+  import {createSong} from 'res/api/songs'
     export default{
         data(){
             return {
-              list:""
+              list:"",
+              songlist:""
             }
         },
   computed:{
@@ -34,18 +37,27 @@
   },
   methods:{
     _getDiscList(){
-      const url=api.index.disclists
-      this.$http.get(url,{
-        headers: {
-          referer: 'https://y.qq.com',  //源域名
-          host: 'y.qq.com'
-        }
-      }).then((res)=>{
+      if(!this.disc.dissid){
+        this.$router.push("/recommend")
+        return
+      }
+      getDiscList(this.disc.dissid).then((res)=>{
         console.log(res.data)
+        this.songlist=this._normalizeSong(res.data.cdlist[0].songlist)
       })
+  },
+    _normalizeSong(list){
+      let ret=[]
+      list.forEach((musicData)=>{
+        if(musicData.songid && musicData.albumid){
+          ret.push(createSong(musicData))
+        }
+      })
+      console.log(ret)
+      return ret
     }
   }
-    }
+  }
 </script>
 
 

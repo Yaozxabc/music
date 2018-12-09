@@ -41,11 +41,25 @@ module.exports = {
           '^/lyrics':''
         }
       },
-      '/disc':{
+      '/playlist':{
+        target:'http://ustbhuangyi.com',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/playlist':''
+        }
+      },
+      '/disclist':{
+        target:'http://ustbhuangyi.com',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/disclist':''
+        }
+      },
+      '/ranklist':{
         target:'https://c.y.qq.com',
         changeOrigin:true,
         pathRewrite:{
-          '^/disc':''
+          '^/ranklist':''
         }
       }
     },

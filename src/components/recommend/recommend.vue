@@ -15,7 +15,7 @@
     <div class="recommend_list">
       <h1>热门歌单推荐</h1>
       <ul>
-        <li v-for="item in playlist" @click="selectItem(item)">
+        <li v-for="item in playList" @click="selectItem(item)">
           <div class="icon">
             <img v-lazy="item.imgurl" width="60" height="60" alt=""/>
           </div>
@@ -29,7 +29,7 @@
     </div>
   </div>
       </div>
-      <div class="recom_loading" v-show="!playlist.length">
+      <div class="recom_loading" v-show="!playList.length">
         <loading></loading>
       </div>
   </scroll>
@@ -41,7 +41,7 @@
   import {mockData} from 'res/scripts/MockData.js'
   import slider from 'base/slider'
   import scroll from 'base/scroll'
-  import {getPlayList,getDiscList} from 'res/api/recommend.js'
+  import {getPlayList} from 'res/api/recommend.js'
   import {ERR_ok} from 'res/api/config.js'
   import abc from 'res/api/api.js'
   import {mapMutations} from 'vuex'
@@ -51,7 +51,7 @@
         data(){
             return {
               recommend:[],
-              playlist:[]
+              playList:[]
             }
         },
   components:{
@@ -94,29 +94,32 @@
         }
       })
     },
-    _getPlayList(){
-      getDiscList().then((res)=>{
-        console.log(res)
-      })
-//      this.$http.post(this.$api.index.playlists,{
-//        headers:{
-//          Origin:'https://music.163.com',
-//          referer:'https://music.163.com/m/',
-//          host:'music.163.com'
-//        }
-//      }).then((res)=> {
-//        var oData = res.data
-//        if (oData.code == ERR_ok) {
-//          this.playlist=oData.data
-//          console.log(this.playlist)
-//        }
+//    _getPlayList(){
+//      getPlayList().then((res)=>{
+//        console.log(res)
 //      })
-    },
+//////      this.$http.post(this.$api.index.playlists,{
+//////        headers:{
+//////          Origin:'https://music.163.com',
+//////          referer:'https://music.163.com/m/',
+//////          host:'music.163.com'
+//////        }
+//////      }).then((res)=> {
+//////        var oData = res.data
+//////        if (oData.code == ERR_ok) {
+//////          this.playlist=oData.data
+//////          console.log(this.playlist)
+//////        }
+//////      })
+//    },
     _getPlaylist(){
-      this.$http.get('./static/OnlineData.json').then((res)=>{
-        let myData=res.data.data
-        this.playlist=myData.list
-      })
+//      this.$http.get('./static/OnlineData.json').then((res)=>{
+//        let myData=res.data.data
+//        this.playList=myData.list
+//      })
+      getPlayList().then((res)=>{
+      this.playList=res.data.data.list
+    })
     },
     imgload(){
       if(!this.checkload){
@@ -138,7 +141,7 @@
   },
   created(){
     this._getSliderData()
-      this._getPlaylist()
+    this._getPlaylist()
   },
   mounted(){
 this.setPageHeight();

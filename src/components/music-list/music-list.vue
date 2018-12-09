@@ -17,7 +17,7 @@
     :data="songs"
     ref="list">
     <div class="song-list">
-      <song-list :songs="songs" @select="selectSong"></song-list>
+      <song-list :songs="songs" @select="selectSong" :icon="iconShow"></song-list>
     </div>
   </scroll>
 </div>
@@ -43,6 +43,10 @@
         title:{
           type:String,
           default:''
+        },
+        iconShow:{
+          type:Boolean,
+          default:false
         }
       },
       data(){
@@ -107,9 +111,7 @@
       this.$refs.list.refresh()
     },
     toSinger(){
-      this.$router.push({
-        path:'/singer'
-      })
+      this.$router.back()
     },
     scroll(pos){
       this.ScrollY=pos.y;
