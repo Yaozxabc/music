@@ -61,6 +61,13 @@ module.exports = {
         pathRewrite:{
           '^/ranklist':''
         }
+      },
+      '/searchlist':{
+        target:'http://ustbhuangyi.com',
+        changeOrigin:true,
+        pathRewrite:{
+          '^/searchlist':''
+        }
       }
     },
     // Various Dev Server settings

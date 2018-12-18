@@ -23,6 +23,10 @@
         listentScroll:{//是否监听滚动事件
           type:Boolean,
           default :false
+        },
+        pullUp:{
+          type:Boolean,
+          default:true
         }
       },
         data(){
@@ -53,6 +57,14 @@
           me.$emit('scroll',pos)
           //触发滚动事件，并将pos属性值传出去，pos为当前滚动的x轴和y轴的对象
 
+        })
+      }
+      if(this.pullUp){
+        let self=this;
+        this.scroll.on('scrollEnd',function(){
+          if(self.scroll.y<=(self.scroll.maxScrollY+80 )){
+            self.$emit('scrollToEnd')
+          }
         })
       }
       },

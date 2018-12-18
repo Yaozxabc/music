@@ -17,6 +17,9 @@
     </li>
   </ul>
   </scroll>
+  <div class="loading" v-show="!toplist.length">
+    <loading></loading>
+  </div>
   <div>
   <router-view></router-view>
   </div>
@@ -27,6 +30,7 @@
   import {getRankList} from 'res/scripts/ramk.js'
   import scroll from "com/base/scroll"
   import {mapMutations} from 'vuex'
+  import loading from 'com/base/loading/loading'
   import {playlistMixin} from 'res/scripts/mixin'
     export default{
       mixins:[playlistMixin],
@@ -36,7 +40,10 @@
             }
         },
     created(){
-      this._getRankList();
+    var self=this
+    setTimeout(function(){
+      self._getRankList();
+    },2000)
     },
     methods:{
       handlePlaylist(){
@@ -68,7 +75,7 @@
       })
     },
   components:{
-    scroll
+    scroll,loading
   }
     }
 </script>
@@ -117,5 +124,11 @@
   }
   }
   }
-
+.loading{
+  position: absolute;
+  width: 100%;
+  top:50%;
+  left: 50%;
+  transform: translateX(-50%)
+}
 </style>

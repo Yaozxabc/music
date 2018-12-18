@@ -46,8 +46,8 @@ export default{
   disclist:"/disclist"+"/music/api/getCdInfo?", // 社区相关操作
   rankList:'/ranklist'+'/v8/fcg-bin/fcg_myqq_toplist.fcg?',
   topList:'/ranklist'+'/v8/fcg-bin/fcg_v8_toplist_cp.fcg?',
-  articleList:'/api/article/articleList', // 文章列表
-  articleListDetails:'/api/article/productDetails', // 文章详情
+  hotKeyList:'/ranklist'+'/splcloud/fcgi-bin/gethotkey.fcg?', // 文章列表
+  searchList:'/searchlist'+'/music/api/search?', // 文章详情
   articleListCount:'/api/article/productCount', // 文章总数
   articleMark:'/api/article/articleMark', // 文章点赞
   articleCollect:'/api/article/articleCollect'  //文章收藏

@@ -1,72 +1,89 @@
 <template>
 <div class="search">
-  <div class="search_con">
-    <i class="iconfont icon-search"></i>
-    <div class="search_warp">
-    <div class="search_input">
-      <input type="text" class="search_text" v-model="query" placeholder="搜索歌手、歌曲"/>
-      <i class="iconfont icon-et-wrong" v-show="!query.length"></i>
-    </div>
-      <div class="search_result">
+  <div class="search_warp">
+    <search-box ref="searchBox" @query="searchQuery"></search-box>
+  </div>
+  <div class="shortcut_warpper" v-show="!query.length">
+    <div class="shortcut">
+      <div class="hot-key">
+        <h1>热门搜索</h1>
         <ul>
-          <li><i class="iconfont icon-search"></i><span class="text">ddd</span></li>
+          <li @click="setQuery(item.k)" v-for="item in hotKey"><span>{{item.k}}</span></li>
         </ul>
       </div>
     </div>
   </div>
-
+  <div class="search_result">
+    <suggest :query="query"></suggest>
+  </div>
+  <router-view></router-view>
 </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import searchBox from 'com/base/search-box/search-box'
+  import suggest from 'com/suggest/suggest'
+  import {getHotKey} from 'res/api/search'
+  const HotKeyCount=10;
     export default{
         data(){
             return {
+              hotKey:[],
               query:""
             }
-        }
+        },
+  created(){
+    this._getHotKey();
+  },
+  methods:{
+    _getHotKey(){
+      getHotKey().then((res)=>{
+        console.log(res.data)
+        this.hotKey=res.data.data.hotkey.slice(0,HotKeyCount)
+      })
+    },
+    setQuery(query){
+      this.$refs.searchBox.setQuery(query);
+    },
+    searchQuery(query){
+      this.query=query;
+    }
+  },
+  components:{
+    searchBox,suggest
+  }
     }
 </script>
 
 
 <style scoped lang="scss">
   .search{
+    height: 100%;
   padding:0 10px;
-    .search_con{
-    display:flex;
-    .iconfont{
-      display:inline-block;width: 40px;height: 40px;font-size: 40px;color: #22746b}
-      .icon-search{}
-      .search_warp{
-      flex:1;
-      position:relative;
-      .search_input{
-        display:flex;
-        height: 40px;
-        margin: 0 20px;
-        border:1px solid #fff;
-      border-radius:3px;
-        .search_text{display:block;flex: 1;height:100%;padding:0 5px;border: none;background: transparent;font-size:24px;color: #fff0e3;}
-        .icon-et-wrong{float: right;}
-      }
-  .search_result{
-    position: absolute;
-    left: 20px;
-    top: 100%;
-    width:calc(100% - 40px);
-    background:#333;
-    ul{
-      li{
-        margin-top: 10px;
-        font-size: 30px;
-        color:darkgrey;
-        .text{margin-left: 10px;}
+    .shortcut_warpper{
+    margin-top:20px;
+      .shortcut{
+      padding:20px;
+        .hot-key{
+          h1{font-size: 24px;color: darkgrey;margin-bottom: 10px;}
+          ul{
+            li{
+              float: left;
+              margin-right: 20px;
+              margin-bottom: 20px;
+              span{
+                padding: 5px 10px;
+                font-size: 24px;
+                height: 40px;
+                line-height: 40px;
+                color: #004444;
+                background: #fff0e3;
+                border-radius: 4px;
+              }
+            }
+          }
+        }
       }
     }
   }
-
-  }
-    }
-  }
-
 </style>

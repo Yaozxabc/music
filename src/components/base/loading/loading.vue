@@ -22,20 +22,19 @@
 
 <style scoped lang="scss">
 .loader{
-  width: 200px;
-  height: 250px;
   margin: 0 auto;
   text-align: center;
 img{
-  width: 100%;
+  width: 60px;
+  height: 60px;
   margin: 0 auto;
 }
   .desc{
+    margin: 10px auto;
     height: 20px;
     line-height: 20px;
     font-size: 14px;
     color: $fontColor;
   }
-
 }
 </style>
