@@ -4,8 +4,10 @@
   class="suggest"
   :pullUp="pullUp"
   @scrollToEnd="searchMore"
+  :beforeScroll="isBefore"
+  @beforeScroll="beforeScroll"
   ref="suggest"
-  v-show="query.length && result.length">
+  v-show="query.length">
   <ul class="suggest-list">
     <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
       <div class="icon">
@@ -15,20 +17,24 @@
         <p class="text" v-html="getDisplayName(item)"></p>
       </div>
     </li>
-    <loading v-show="hasMore" title=""></loading>
+    <loading v-show="hasMore" title="" class="loading"></loading>
   </ul>
+  <div class="no_result_warpper" v-show="!hasMore || !result.length">
+    <no-result ></no-result>
+  </div>
 </scroll>
 </template>
 
 <script type="text/ecmascript-6">
   const TypeSinger='singer'
-  const perpage=20
+  const perpage=30
   import Scroll from 'com/base/scroll'
   import {searchList} from 'res/api/search'
   import {createSong} from 'res/api/songs'
   import Loading from 'com/base/loading/loading'
+  import NoResult from 'com/base/no-result/no-result'
   import {Singer} from 'res/api/singer'
-  import {mapMutations} from 'vuex'
+  import {mapMutations,mapActions} from 'vuex'
     export default{
       props:{
         query:{
@@ -50,7 +56,8 @@
               page:1,
               result:[],
               pullUp:true,
-              hasMore:true
+              hasMore:true,
+              isBefore:true
             }
         },
     methods:{
@@ -91,7 +98,10 @@
         path:`/search/${singer.id}`
       })
       this.setSinger(singer)
+    }else{
+      this.insertSong(item);
     }
+        this.$emit('select')
   },
       getIconClass(item){
         if(item.type==TypeSinger){
@@ -136,12 +146,18 @@
           }
         })
       },
+      beforeScroll(){
+        this.$emit("listScroll")
+      },
       ...mapMutations({
-      setSinger:'SET_SINGER',
-    })//...mapMatations代表一个包含所有mutation信息的数组
+      setSinger:'SET_SINGER',//...mapMatations代表一个包含所有mutation信息的数组
+    }),
+  ...mapActions([
+      'insertSong'
+  ])
     },
   components:{
-    Scroll,Loading
+    Scroll,Loading,NoResult
   }
     }
 </script>
@@ -153,7 +169,7 @@
     overflow: hidden;
     margin: 0 20px 0 60px;
     width:calc(100% - 80px);
-    background:#333;
+
     .suggest-list{
       .suggest-item{
         clear: both;
@@ -171,6 +187,9 @@
           }
       }
     }
+  .loading{
+    margin-top: 20px;
+    transform: translateX(-20px);
   }
-
+  }
 </style>

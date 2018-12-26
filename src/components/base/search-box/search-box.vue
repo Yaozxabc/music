@@ -15,6 +15,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+  import {debounce} from 'res/scripts/dom'
     export default{
       props:{
         placeholder:{
@@ -36,9 +37,9 @@
       }
     },
     created(){
-      this.$watch('query',(newquery)=>{
+      this.$watch('query',debounce((newquery)=>{
         this.$emit('query',newquery)//将新值传出去
-      })
+      },400))//引入节流函数进行节流控制
     }
     }
 </script>
@@ -48,7 +49,7 @@
   .search_con{
     display:flex;
   .iconfont{
-    display:inline-block;width: 40px;height: 40px;font-size: 40px;color: #22746b}
+    display:inline-block;width: 40px;height: 40px;font-size:  $icon-md-Size;color: $icon-md-Color;}
   .icon-search{}
   .search_warp{
     flex:1;

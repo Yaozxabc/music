@@ -38,6 +38,7 @@
     "fastclick": "^1.0.6",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
+    "good-storage": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-sass": "^4.0.2",
     "html-webpack-plugin": "^2.30.1",

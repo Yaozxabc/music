@@ -27,6 +27,10 @@
         pullUp:{
           type:Boolean,
           default:true
+        },
+        beforeScroll:{
+          type:Boolean,
+          default:false
         }
       },
         data(){
@@ -67,6 +71,11 @@
           }
         })
       }
+      if(this.beforeScroll){
+        this.scroll.on('befroeScrollStart',()=>{
+          this.$emit('beforeScroll')
+        })
+      }
       },
     //20毫秒主要是用于等待dom结构生成
 
@@ -86,7 +95,8 @@
     scrollToElement(){
       this.scroll && this.scroll.scrollToElement.apply(this.scroll,arguments);
       //扩展方法，用于接受scrollTo(参数方法)，滚动到指定的目标元素。
-    }
+    },
+
 
   },
   watch:{
