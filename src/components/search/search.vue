@@ -1,10 +1,11 @@
 <template>
 <div class="search">
   <div class="search_warp">
-    <search-box ref="searchBox" @query="searchQuery"></search-box>
+    <search-box ref="searchBox" @query="searchQuery" ></search-box>
   </div>
   <div class="shortcut_warpper" v-show="!query.length">
-    <div class="shortcut">
+    <scroll class="shortcut" :data="shortcut" ref="shortcut">
+      <div>
       <div class="hot-key">
         <h1>热门搜索</h1>
         <ul>
@@ -15,27 +16,31 @@
         <h1 >
           <span class="title">搜索历史</span>
           <span class="clear">
-            <i class="icon-clear iconfont icon-trash" @click.stop="clearHistory"></i>
+            <i class="icon-clear iconfont icon-trash" @click.stop=" showConfirm"></i>
           </span>
         </h1>
         <search-list :searches="searchHistory"
           @select="setQuery" @delete="deleteOne"></search-list>
       </div>
-    </div>
+      </div>
+    </scroll>
   </div>
   <div class="search_result">
     <suggest :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
   </div>
+  <confirm ref="confirm" title="是否清空所有列表" @confirm="clearSearch"></confirm>
   <router-view></router-view>
 </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import Scroll from 'com/base/scroll'
   import SearchBox from 'com/base/search-box/search-box'
   import Suggest from 'com/suggest/suggest'
   import SearchList from 'com/base/search-list/search-list'
   import {getHotKey} from 'res/api/search'
   import {mapActions,mapGetters} from 'vuex'
+  import Confirm from 'com/base/confirm/confirm'
 
   const HotKeyCount=10;
     export default{
@@ -49,6 +54,9 @@
     this._getHotKey();
   },
   computed:{
+    shortcut(){
+      return this.hotKey.concat(this.searchHistory)
+    },
     ...mapGetters([
       'searchHistory'
     ])
@@ -78,6 +86,9 @@
     clearHistory(){
       this.clearSearch()
     },
+    showConfirm(){
+      this.$refs.confirm.show()
+    },
     ...mapActions([
       'saveSearchHistory',
       'deleteSearchOne',
@@ -85,7 +96,16 @@
     ])
   },
   components:{
-    SearchBox,Suggest,SearchList
+    Scroll,SearchBox,Suggest,SearchList,Confirm
+  },
+  watch:{
+    query(newquery){
+      if(!newquery){
+        setTimeout(()=>{
+          this.$refs.shortcut.refresh()
+        },20)
+      }
+    }
   }
     }
 </script>
@@ -96,9 +116,12 @@
     height: 100%;
   padding:0 10px;
     .shortcut_warpper{
+      height: 100%;
+
     margin-top:20px;
       .shortcut{
-      padding:20px;
+        overflow: hidden;position: fixed;top: 200px;bottom: 0;
+        padding:20px;
         .hot-key{
           h1{font-size: 24px;color: darkgrey;margin-bottom: 10px;}
           ul{
