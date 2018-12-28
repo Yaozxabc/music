@@ -149,6 +149,9 @@
       beforeScroll(){
         this.$emit("listScroll")
       },
+      refresh(){
+        this.$refs.suggest.refresh()
+      },
       ...mapMutations({
       setSinger:'SET_SINGER',//...mapMatations代表一个包含所有mutation信息的数组
     }),

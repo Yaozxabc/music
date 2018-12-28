@@ -130,11 +130,7 @@
       }
 
     },
-    setPageHeight(){
-      let oHeight=document.documentElement.clientHeight;
-      let recom=document.getElementById('recommend_content');
-      recom.style.height=oHeight-80+'px';
-    },
+
     ...mapMutations({
       setDisc:"SET_DISC"
     })
@@ -144,7 +140,7 @@
     this._getPlaylist()
   },
   mounted(){
-this.setPageHeight();
+
     window.addEventListener('resize',()=>{
       this.setPageHeight();
     })

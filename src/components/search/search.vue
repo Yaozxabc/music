@@ -3,7 +3,7 @@
   <div class="search_warp">
     <search-box ref="searchBox" @query="searchQuery" ></search-box>
   </div>
-  <div class="shortcut_warpper" v-show="!query.length">
+  <div class="shortcut_warpper" v-show="!query.length" ref="shortwarpper">
     <scroll class="shortcut" :data="shortcut" ref="shortcut">
       <div>
       <div class="hot-key">
@@ -12,7 +12,7 @@
           <li @click="setQuery(item.k)" v-for="item in hotKey"><span>{{item.k}}</span></li>
         </ul>
       </div>
-      <div class="search-history" v-show="searchHistory.length">
+      <div class="search-history" v-show="searchHistory.length" >
         <h1 >
           <span class="title">搜索历史</span>
           <span class="clear">
@@ -25,8 +25,8 @@
       </div>
     </scroll>
   </div>
-  <div class="search_result">
-    <suggest :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
+  <div class="search_result" ref="searchResult">
+    <suggest :query="query" @listScroll="blurInput" @select="saveSearch" ref="suggest"></suggest>
   </div>
   <confirm ref="confirm" title="是否清空所有列表" @confirm="clearSearch"></confirm>
   <router-view></router-view>
@@ -38,12 +38,13 @@
   import SearchBox from 'com/base/search-box/search-box'
   import Suggest from 'com/suggest/suggest'
   import SearchList from 'com/base/search-list/search-list'
+  import Confirm from 'com/base/confirm/confirm'
   import {getHotKey} from 'res/api/search'
   import {mapActions,mapGetters} from 'vuex'
-  import Confirm from 'com/base/confirm/confirm'
-
+  import {playlistMixin} from 'res/scripts/mixin'
   const HotKeyCount=10;
     export default{
+      mixins:[playlistMixin],
         data(){
             return {
               hotKey:[],
@@ -62,6 +63,13 @@
     ])
   },
   methods:{
+    handlePlaylist(playlist){
+      const bottom=playlist.length>0? "80px":"";
+      this.$refs.shortwarpper.style.bottom=bottom;
+      this.$refs.shortcut.refresh()
+      this.$refs.searchResult.style.bottom=bottom;
+      this.$refs.suggest.refresh()
+    },
     _getHotKey(){
       getHotKey().then((res)=>{
         console.log(res.data)
@@ -116,12 +124,11 @@
     height: 100%;
   padding:0 10px;
     .shortcut_warpper{
-      height: 100%;
-
+      overflow: hidden;position: fixed;top: 200px;bottom: 0;
+      padding:20px;
     margin-top:20px;
       .shortcut{
-        overflow: hidden;position: fixed;top: 200px;bottom: 0;
-        padding:20px;
+        height: 100%;
         .hot-key{
           h1{font-size: 24px;color: darkgrey;margin-bottom: 10px;}
           ul{
